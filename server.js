@@ -1,12 +1,25 @@
 const express = require('express');
 const http = require('http');
 const { Server } = require('socket.io');
+const path = require('path');
 
 const app = express();
 const server = http.createServer(app);
 const io = new Server(server);
 
-app.use(express.static('public'));
+app.use(express.static(path.join(__dirname, 'public')));
+
+app.get('/', (req, res) => {
+    res.send(`
+        <div style="font-family: sans-serif; text-align: center; margin-top: 50px;">
+            <h1 style="color: red;">⚠️ Erro: Arquivos do Site Não Encontrados!</h1>
+            <h2>O servidor Node.js está rodando perfeitamente no Render!</h2>
+            <p>Porém, ele não conseguiu encontrar a sua pasta <b>public</b>.</p>
+            <p>Isso acontece porque quando você enviou os arquivos para o GitHub, você provavelmente <b>esqueceu de enviar a pasta "public"</b> (onde ficam o index.html, style.css e script.js).</p>
+            <p><b>Solução:</b> Vá no seu GitHub e faça o upload da pasta "public" inteira para lá. O Render vai atualizar automaticamente em alguns minutos!</p>
+        </div>
+    `);
+});
 
 const defaultQuestions = [
     { question: "Qual das opções abaixo melhor define o termo 'Energia Limpa'?", options: ["Energia gerada pela queima de combustíveis", "Energia que não lança poluentes na atmosfera", "Energia extraída do carvão vegetal", "Qualquer energia muito barata"], answer: 1, imageUrl: "https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?w=800&q=80" },
