@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ODS 7 - Energia Limpa</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;800&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <button id="mute-btn" class="glass-btn" style="position: absolute; bottom: 20px; right: 20px; border-radius: 50%; width: 50px; height: 50px; padding: 0; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; z-index: 100; box-shadow: 0 0 10px rgba(0,0,0,0.5);" title="Mutar/Desmutar Som">🔊</button>
+    
+    <!-- BARRA DE EMOJIS (Visível para jogadores) -->
+    <div id="emoji-bar" class="hidden" style="position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%); display: flex; gap: 15px; background: rgba(0,0,0,0.5); backdrop-filter: blur(10px); padding: 10px 20px; border-radius: 30px; border: 1px solid rgba(255,255,255,0.2); z-index: 50;">
+        <button class="emoji-btn glass-btn" style="padding: 5px 15px; font-size: 1.5rem; border-radius: 50%;">❤️</button>
+        <button class="emoji-btn glass-btn" style="padding: 5px 15px; font-size: 1.5rem; border-radius: 50%;">😂</button>
+        <button class="emoji-btn glass-btn" style="padding: 5px 15px; font-size: 1.5rem; border-radius: 50%;">⚡</button>
+        <button class="emoji-btn glass-btn" style="padding: 5px 15px; font-size: 1.5rem; border-radius: 50%;">🤯</button>
+    </div>
+
+    <div class="mesh-bg"></div>
+
+    <main class="app-wrapper">
+        <div class="glass-panel main-panel">
+
+            <!-- TELA DE LOGIN -->
+            <section id="login-screen" class="screen active">
+                <div class="icon-glow">🌱⚡</div>
+                <h1 class="title-gradient">Energia Limpa</h1>
+                <p class="subtitle">Multiplayer Quiz</p>
+
+                <div id="login-options" class="input-group">
+                    <button id="show-create-btn" class="glass-btn primary-glow hero-btn">🎮 Criar Nova Sala</button>
+                    <button id="show-join-btn" class="glass-btn secondary-glow hero-btn">🕹️ Entrar em Sala</button>
+                </div>
+
+                <!-- Formulário de Criar Sala -->
+                <div id="create-form" class="input-group hidden mt-20">
+                    <input type="text" id="host-name" placeholder="Seu Nome (Anfitrião)" class="glass-input" autocomplete="off" maxlength="15">
+                    
+                    <select id="game-mode-select" class="glass-input" style="padding: 12px; cursor: pointer;">
+                        <option value="classic">Modo Clássico (Pontos)</option>
+                        <option value="survival">Modo Sobrevivência (Errou, fora!)</option>
+                    </select>
+
+                    <div style="display: flex; gap: 10px; margin-top: 10px;">
+                        <button id="use-default-quiz-btn" class="glass-btn primary-glow" style="flex: 1; padding: 12px; font-size: 1rem;">Quiz Energia Limpa (Padrão)</button>
+                        <button id="show-creator-btn" class="glass-btn secondary-glow" style="flex: 1; padding: 12px; font-size: 1rem;">Criar o Meu Novo Quiz</button>
+                    </div>
+
+                    <button class="back-link" onclick="backToOptions()">Voltar</button>
+                </div>
+
+                <!-- Formulário de Criar Quiz Personalizado -->
+                <div id="quiz-creator-form" class="hidden mt-20" style="width: 100%; max-width: 500px; margin: 0 auto; text-align: left;">
+                    <h3 class="title-gradient small text-center" style="margin-bottom: 10px;">Criador de Quiz</h3>
+                    <div id="questions-list" style="max-height: 350px; overflow-y: auto; padding-right: 10px; display: flex; flex-direction: column; gap: 15px;">
+                        <!-- Perguntas dinâmicas -->
+                    </div>
+                    <button id="add-question-btn" class="glass-btn secondary-glow mt-10" style="width: 100%; padding: 10px;">+ Adicionar Pergunta</button>
+                    <button id="create-custom-room-btn" class="glass-btn primary-glow mt-10" style="width: 100%;">Criar Sala e Jogar!</button>
+                    <button class="back-link" style="display: block; text-align: center; width: 100%;" id="back-to-create-form">Voltar</button>
+                </div>
+
+                <!-- Formulário de Entrar na Sala -->
+                <div id="join-form" class="input-group hidden mt-20">
+                    <input type="text" id="room-pin" placeholder="PIN da Sala (6 dígitos)" class="glass-input"
+                        autocomplete="off" maxlength="6">
+                    
+                    <div class="avatar-selector mt-10" style="display: flex; align-items: center; justify-content: center; margin-bottom: 25px;">
+                        <div class="avatar-wrapper" style="width: 140px; height: 140px; background: rgba(255,255,255,0.1); border-radius: 50%; padding: 8px; border: 4px solid var(--secondary); box-shadow: 0 0 25px var(--secondary-glow); position: relative;">
+                            <img id="player-avatar-preview" src="https://api.dicebear.com/7.x/bottts/svg?seed=Convidado" alt="Avatar" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover; background: rgba(0,0,0,0.2);">
+                            <button id="roll-avatar-btn" class="glass-btn secondary-glow" style="position: absolute; bottom: -5px; right: -15px; padding: 10px; border-radius: 50%; min-width: 55px; height: 55px; display: flex; align-items: center; justify-content: center; font-size: 1.6rem; z-index: 10; box-shadow: 0 5px 15px rgba(0,0,0,0.5);" title="Mudar Robô">🎲</button>
+                        </div>
+                    </div>
+
+                    <input type="text" id="player-name" placeholder="Seu Nome" class="glass-input"
+                        autocomplete="off" maxlength="15">
+                    <button id="join-room-btn" class="glass-btn secondary-glow mt-10">Entrar</button>
+                    <button class="back-link" onclick="backToOptions()">Voltar</button>
+                </div>
+            </section>
+
+            <!-- TELA DE LOBBY -->
+            <section id="lobby-screen" class="screen">
+                <div class="room-pin-banner" id="pin-banner">
+                    CÓDIGO DA SALA: <span id="lobby-pin-display">------</span>
+                    <button id="copy-pin-btn" class="glass-btn primary-glow"
+                        style="padding: 8px 15px; font-size: 0.9rem; margin-left: 15px;">Copiar</button>
+                </div>
+
+                <!-- QR CODE APENAS PARA O HOST -->
+                <div id="host-qr-container" class="hidden" style="display: flex; flex-direction: column; align-items: center; margin-bottom: 20px;">
+                    <p style="margin-bottom: 10px; color: var(--secondary); font-weight: 600;">Escaneie para entrar na sala:</p>
+                    <div id="qrcode" style="background: white; padding: 15px; border-radius: 10px; box-shadow: 0 0 20px var(--primary-glow);"></div>
+                </div>
+
+                <div class="header-flex mt-20">
+                    <h2 class="title-gradient">Lobby</h2>
+                    <span class="pulse-text" id="lobby-status">Aguardando jogadores...</span>
+                </div>
+
+                <div class="players-container" id="players-list">
+                    <!-- Lista de jogadores -->
+                </div>
+
+                <!-- Apenas o Host verá este botão -->
+                <button id="start-game-btn" class="glass-btn primary-glow full-width mt-20 hidden">Iniciar
+                    Partida</button>
+            </section>
+
+            <!-- TELA DE QUIZ -->
+            <section id="quiz-screen" class="screen">
+                <div class="quiz-header">
+                    <div class="badge" id="question-count">Q 1/10</div>
+                    <div class="timer-wrapper">
+                        <svg class="timer-svg" viewBox="0 0 36 36">
+                            <path class="timer-bg"
+                                d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                            <path class="timer-progress" id="timer-path" stroke-dasharray="100, 100"
+                                d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                        </svg>
+                        <span id="timer-display" class="timer-text">15</span>
+                    </div>
+                </div>
+
+                <h2 id="question-text" class="question-title">Pergunta aqui?</h2>
+                <img id="question-image" src="" alt="Imagem da Pergunta" class="hidden" style="max-height: 200px; border-radius: 15px; margin: 0 auto 20px auto; display: block; box-shadow: 0 0 15px rgba(255,255,255,0.2);">
+
+                <div id="options-container" class="options-layout">
+                    <!-- Opções serão injetadas via JavaScript -->
+                </div>
+
+                <!-- Painel do Apresentador -->
+                <div id="host-panel" class="hidden mt-20" style="display: flex; justify-content: space-between; align-items: center; background: rgba(16, 185, 129, 0.1); border: 1px solid var(--primary); border-radius: 12px; padding: 10px 20px;">
+                    <div style="font-size: 1.1rem; font-weight: 600; color: white;">
+                        Respostas: <span id="answered-count" style="color: var(--primary);">0</span> / <span id="total-count">0</span>
+                    </div>
+                    <button id="skip-btn" class="glass-btn secondary-glow" style="padding: 5px 15px; font-size: 0.9rem; min-width: auto; height: auto;">Pular ⏭️</button>
+                </div>
+
+                <div id="waiting-msg" class="glass-badge hidden">Aguardando outros jogadores...</div>
+            </section>
+
+            <!-- TELA DE RESULTADO PARCIAL / PLACAR -->
+            <section id="leaderboard-screen" class="screen">
+                <div class="round-feedback" id="round-feedback">
+                    <div class="feedback-icon" id="feedback-icon">✨</div>
+                    <h2 id="feedback-title">Correto!</h2>
+                    <p id="feedback-subtitle">+10 pontos</p>
+                </div>
+
+                <div class="divider"></div>
+
+                <h3 class="title-gradient small">Top Jogadores</h3>
+                <ul id="leaderboard-list" class="glass-list">
+                    <!-- Ranking dos jogadores -->
+                </ul>
+            </section>
+
+            <!-- TELA DE RESULTADO FINAL -->
+            <section id="result-screen" class="screen text-center">
+                <div class="icon-glow big" id="result-icon-glow">🏆</div>
+                <h2 class="title-gradient">Fim de Jogo</h2>
+
+                <!-- PODIUM 3D -->
+                <div id="podium-container" style="display: flex; justify-content: center; align-items: flex-end; height: 250px; margin: 30px 0; gap: 10px;">
+                    <!-- Pilares serão injetados via JS -->
+                </div>
+
+                <ul id="final-leaderboard-list" class="glass-list compact mt-20">
+                    <!-- Ranking final -->
+                </ul>
+
+                <button id="restart-btn" class="glass-btn secondary-glow full-width mt-20 hidden">Voltar ao
+                    Lobby</button>
+                <div id="waiting-restart-msg" class="glass-badge hidden">Aguardando anfitrião reiniciar...</div>
+            </section>
+
+        </div>
+    </main>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <script src="script.js"></script>
+</body>
+
+</html>
